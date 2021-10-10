@@ -1,0 +1,92 @@
+{
+    "name": "hen-minter",
+    "description": "The Hic Et Nunc Minter Project",
+    "private": true,
+    "version": "0.0.1",
+    "license": "MIT",
+    "author": "Leon Nicholls",
+    "engines": {
+        "node": ">=12.17.0"
+    },
+    "dependencies": {
+        "@pinata/sdk": "^1.1.23",
+        "@taquito/beacon-wallet": "^10.1.3",
+        "@taquito/taquito": "^10.1.3",
+        "ajv": "^8.6.3",
+        "buffer": "^6.0.3",
+        "dotenv": "^10.0.0",
+        "fetch-blob": "^3.1.2",
+        "fflate": "^0.7.1",
+        "ipfs-http-client": "^53.0.1",
+        "local-storage": "^2.0.0",
+        "localstorage-polyfill": "^1.0.1",
+        "loglevel": "^1.7.1",
+        "mediainfo.js": "^0.1.6",
+        "mime-types": "^2.1.32",
+        "nft.storage": "^3.3.0",
+        "read-json-lines-sync": "^2.2.0",
+        "wasm-imagemagick": "^1.2.8"
+    },
+    "scripts": {
+        "lint": "eslint \"**/*.jsnp\"",
+        "lint:fix": "eslint --fix \"**/*.js\"",
+        "test1": "npm run lint",
+        "cmd-start": "node src/cmd.js",
+        "cmd": "npm cmd-start -- ",
+        "prettier": "prettier --write \"./src/**/*.{js,jsx}\"",
+        "clean": "rimraf ./dist",
+        "build": "genversion src/version.js && webpack --env production",
+        "serve": "genversion src/version.js && webpack serve --mode=development",
+        "start": "npm run serve",
+        "test": "npm run build && playwright test tests"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@babel/core": "^7.15.5",
+        "@babel/preset-env": "^7.15.6",
+        "@babel/preset-react": "^7.14.5",
+        "babel-loader": "^8.2.2",
+        "copy-webpack-plugin": "^9.0.1",
+        "copyfiles": "^2.4.1",
+        "crypto-browserify": "^3.12.0",
+        "css-loader": "^6.3.0",
+        "dotenv-webpack": "^7.0.3",
+        "eslint": "^7.32.0",
+        "genversion": "^3.0.1",
+        "html-webpack-plugin": "^5.3.2",
+        "https-browserify": "^1.0.0",
+        "mini-css-extract-plugin": "^2.3.0",
+        "node-polyfill-webpack-plugin": "^1.1.4",
+        "node-sass": "^6.0.1",
+        "node-fetch": "^3.0.0",
+        "os-browserify": "^0.3.0",
+        "path-browserify": "^1.0.1",
+        "playwright": "^1.15.0",
+        "prettier": "^2.3.0",
+        "process": "^0.11.10",
+        "sass-loader": "^12.1.0",
+        "stream-browserify": "^3.0.0",
+        "stream-http": "^3.2.0",
+        "style-loader": "^3.3.0",
+        "uglifyjs-webpack-plugin": "^2.2.0",
+        "url": "^0.11.0",
+        "url-loader": "^4.1.1",
+        "webpack": "^5.57.1",
+        "webpack-cli": "^4.8.0",
+        "webpack-dev-server": "^4.3.1",
+        "webpack-filter-warnings-plugin": "^1.2.1",
+        "webpack-merge": "^5.8.0"
+    },
+    "module": "commonjs"
+}

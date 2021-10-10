@@ -1,0 +1,466 @@
+<!--
+Copyright (c) 2021 https://github.com/hicetnunc2000/hicetnunc
+Copyright (c) 2021 Leon Nicholls
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    <title>hic et nunc</title>
+    <style>
+        body,
+        html {
+            margin: 10;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'basier_circle_monoregular', 'Courier New', 'Courier', monospace;
+            color: #dedede;
+            background-color: #111111;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        *,
+        *:before,
+        *:after {
+            box-sizing: border-box;
+        }
+        
+        img {
+            margin: 10px 0;
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
+        
+        #image {
+            display: none;
+        }
+        
+        .bottom {
+            position: fixed;
+            bottom: 0;
+            z-index: 2;
+            width: 100%;
+        }
+        
+        input {
+            width: 100%;
+        }
+        
+        input[type=radio] {
+            width: auto;
+        }
+        
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+            font-size: inherit;
+            color: #dedede;
+        }
+        
+        input:invalid,
+        textarea:invalid {
+            border: 2px dashed red;
+        }
+        
+        input:invalid:required,
+        textarea:invalid:required {
+            background-image: linear-gradient(to right, pink, lightgreen);
+        }
+        
+        input:valid,
+        textarea:valid {
+            border: 1px solid white;
+        }
+        
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            transition: .3s border-color;
+            background-color: #333333;
+        }
+        
+        textarea {
+            white-space: pre;
+            width: 100%;
+            resize: vertical;
+            padding: 10px;
+            margin: 10px 0;
+            transition: .3s border-color;
+            background-color: #333333;
+        }
+        
+        select {
+            padding: 10px;
+            margin: 10px 0;
+            transition: .3s border-color;
+            background-color: #333333;
+        }
+        
+        #description {
+            height: 150px;
+        }
+        
+        #rights {
+            height: 50px;
+        }
+        
+        button,
+        input[type=button] {
+            /* remove default behavior */
+            appearance: none;
+            -webkit-appearance: none;
+            /* usual styles */
+            padding: 10px;
+            border: none;
+            background-color: #3F51B5;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 5px;
+            width: 100%;
+        }
+        
+        button:disabled,
+        input[type=button]:disabled {
+            background-color: #5a618a;
+        }
+        
+        a {
+            color: inherit;
+        }
+        
+        #settings,
+        #progress {
+            width: 100%;
+        }
+        
+        #root {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        @media only screen and (max-width: 0px) {
+            #root {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+        
+        @media only screen and (max-width: 600px) {
+            #root {
+                width: 50%;
+                margin: 0 auto;
+            }
+        }
+        
+        @media only screen and (max-width: 1024px) {
+            #root {
+                width: 50%;
+                margin: 0 auto;
+            }
+        }
+        
+        .overlay {
+            height: 100%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 1);
+            overflow-x: hidden;
+        }
+        
+        .overlay-content {
+            position: relative;
+            top: 25%;
+            width: 100%;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .overlay1 a {
+            padding: 8px;
+            text-decoration: none;
+            font-size: 36px;
+            color: #818181;
+            transition: 0.3s;
+        }
+        
+        #settingsClose {
+            display: block;
+        }
+        
+        .overlay a:hover,
+        .overlay a:focus {
+            color: #f1f1f1;
+        }
+        
+        .overlay .closebtn {
+            position: absolute;
+            top: 0px;
+            right: 45px;
+            font-size: 60px;
+        }
+        
+        @media screen and (max-height: 450px) {
+            .overlay a {
+                font-size: 20px
+            }
+            .overlay .closebtn {
+                font-size: 40px;
+                top: 15px;
+                right: 35px;
+            }
+        }
+        
+        #settings1 {
+            padding: 10px;
+        }
+        
+        #settingsOpen {
+            margin-left: auto;
+            margin-right: 0;
+            font-size: 20px;
+            cursor: pointer
+        }
+        
+        h2 {
+            flex-grow: 1;
+            padding-left: 10px;
+        }
+        
+        .border {
+            border: thin solid white;
+            padding: 5px;
+            margin: 2px;
+        }
+        
+        .padding {
+            padding: 10px
+        }
+        
+        .info {
+            position: relative;
+            font-size: inherit;
+            line-height: 1.5rem;
+            display: inline-block;
+            height: 1em;
+            width: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .info a {
+            font-size: inherit;
+        }
+        
+        .closebtn {
+            text-decoration: none;
+        }
+        
+        #coverOptions,
+        #needCover,
+        #interactiveObjktsGuide,
+        #multipleInput,
+        #settings,
+        #progress {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <noscript>Please enable JavaScript to continue using this application.</noscript>
+    <div id="root">
+        <header></header>
+        <main>
+            <div>
+                <h1>The Hic Et Nunc Minter Project</h1>
+                <span id="settingsOpen">&#9776; settings</span>
+            </div>
+            <input type="button" value="Sync" id="sync" />
+            <div>
+                <div>
+                    <label for="title">title</label>
+                    <input id="title" type="text" />
+                </div>
+                <div>
+                    <label for="description">description</label>
+                    </span><textarea id="description" rows="2"></textarea>
+                </div>
+                <div>
+                    <label for="rights">rights</label>
+                    </span><textarea id="rights" rows="2"></textarea>
+                </div>
+                <div>
+                    <label for="tags">tags</label>
+                    <input id="tags" type="text" />
+                </div>
+                <div>
+                    <label for="editions">editions</label>
+                    <input id="editions" type="number" />
+                </div>
+                <div>
+                    <label for="royalties">royalties</label>
+                    <input id="royalties" type="number" />
+                </div>
+
+                <div>
+                    <label for="file">upload OBJKT</label>
+                    <input id="file" type="file" />
+                </div>
+                <input id="multipleInput" type="file" multiple>
+
+                <label id="interactiveObjktsGuide"><em>Please read this <a href="https://github.com/hicetnunc2000/hicetnunc/wiki/Interactive-OBJKTs" target="_blank">guide</a> before minting interactive OBJKTs</em></label>
+
+                <div id="coverOptions">
+                    <input id="makeCover" type="radio" name="coverOptions" />
+                    <label for="makeCover">Automatically generate cover image</label>
+
+                    <input id="provideCover" type="radio" name="coverOptions" />
+                    <label for="provideCover">Upload own cover image</label>
+                </div>
+
+                <div id="needCover">
+                    <label for="cover">cover</label>
+                    <input id="cover" type="file" />
+                </div>
+
+                <div><img id="image" /></div>
+
+                <div><input type="button" value="Mint" id="mint" disabled="true" /></div>
+                <label>Minting costs ~0.08 tez</label>
+
+                <div id="operation">
+                </div>
+            </div>
+            <div class="bottom" id="message">
+            </div>
+            <div><em>This is an experimental dApp, use it at your own risk.</em></div>
+        </main>
+        <footer></footer>
+    </div>
+    <div id="settings" class="overlay">
+        <div class="padding">
+            <div>
+                <h2>Settings</h2>
+                <a href="javascript:void(0)" class="closebtn" id="settingsClose">&times;</a>
+            </div>
+            <div>
+                <div>
+                    <label for="rpcNode">RPC Node (used for communicating with the Tezos blockchain)</label>
+                    <select id="rpcNode">
+                    <option value="https://mainnet.api.tez.ie">mainnet.api.tez.ie</option>
+                    <option value="https://api.tez.ie/rpc/mainnet">api.tez.ie</option>
+                    <option value="https://mainnet.smartpy.io">mainnet.smartpy.io</option>
+                    <option value="https://rpc.tzbeta.net">rpc.tzbeta.net</option>
+                    <option value="https://teznode.letzbake.com">teznode.letzbake.com</option>
+                </select>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <label for="ipfsApi">IPFS API (used for storing and <a href="https://github.com/hicetnunc2000/hicetnunc/wiki/IPFS-pinning" target="_blank">pinning</a> the NFT files)</label>
+                    <select id="ipfsApi">
+                    <!--option value="nft.storage">NFT.Storage</option-->
+                    <option value="infura">Infura</option>
+                    <option value="pinata">Pinata</option>
+                  </select>
+                    <div><em>By default this project uses the free nft.storage API for uploading and storing the NFT files. If you want to have control over how the files are stored and pinned, you can create your own account with one of the IPFS services below.</em></div>
+                </div>
+
+                <div class="border">
+                    <label>nft.storage configuration (<a href="https://status.nft.storage/" target="_blank">status</a>) [Currently not supported]:
+                    <a href="https://nft.storage/" target="_blank">
+                        <span class="info">
+                            <svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16 text-secondary" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-36 344h12V232h-12c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12v140h12c6.627 0 12 5.373 12 12v8c0 6.627-5.373 12-12 12h-72c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12zm36-240c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z"></path></svg>
+                        </span>
+                    </a>
+                    </label>
+                    <div>
+                        <label for="nftStorageKey">Key</label>
+                        <input id="nftStorageKey">
+                    </div>
+                </div>
+
+                <div class="border">
+                    <label>Infura configuration (<a href="https://status.infura.io/" target="_blank">status</a>):
+                    <a href="https://infura.io/docs/ipfs" target="_blank">
+                    <span class="info">
+                        <svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16 text-secondary" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-36 344h12V232h-12c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12v140h12c6.627 0 12 5.373 12 12v8c0 6.627-5.373 12-12 12h-72c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12zm36-240c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z"></path></svg>
+                    </span>
+                    </a>
+                    </label>
+                    <div>
+                        <label for="infuraProjectId">Project ID</label>
+                        <input id="infuraProjectId">
+                    </div>
+                    <div>
+                        <label for="infuraProjectSecret">Project secret</label>
+                        <input id="infuraProjectSecret">
+                    </div>
+                    <div>
+                        <label for="infuraTimeout">Timeout (mins)</label>
+                        <input id="infuraTimeout" type="number">
+                    </div>
+                </div>
+
+                <div class="border">
+                    <label>Pinata configuration:
+                    <a href="https://www.pinata.cloud/" target="_blank">
+                        <span class="info">
+                            <svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16 text-secondary" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 40c118.621 0 216 96.075 216 216 0 119.291-96.61 216-216 216-119.244 0-216-96.562-216-216 0-119.203 96.602-216 216-216m0-32C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm-36 344h12V232h-12c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12h48c6.627 0 12 5.373 12 12v140h12c6.627 0 12 5.373 12 12v8c0 6.627-5.373 12-12 12h-72c-6.627 0-12-5.373-12-12v-8c0-6.627 5.373-12 12-12zm36-240c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z"></path></svg>
+                        </span>
+                    </a>
+                </label>
+                    <div>
+                        <label for="pinataApiKey">API key</label>
+                        <input id="pinataApiKey">
+                    </div>
+                    <div>
+                        <label for="pinataSecret">API secret</label>
+                        <input id="pinataSecret">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="progress" class="overlay">
+        <div class="overlay-content">
+            <img id="loading" src="assets/loading.gif" />
+            <div id="progressContent"></div>
+        </div>
+    </div>
+</body>
+
+</html>
