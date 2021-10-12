@@ -38,6 +38,8 @@ import * as storage from './storage.js'
 const stream = require('stream')
 const Buffer = require('buffer').Buffer
 
+const CID = require('cids')
+
 let LANGUAGE = {}
 export const setLanguage = (data) => (LANGUAGE = data)
 export const getLanguage = () => LANGUAGE
@@ -275,6 +277,7 @@ export const getSetting = (key, userOnly) => {
  * @returns 
  */
 export const bufferToStream = (buffer) => {
+    log.debug('bufferToStream')
     let tmp = new stream.Duplex()
     tmp.push(Buffer.from(buffer))
     tmp.push(null)
@@ -289,7 +292,8 @@ export const bufferToStream = (buffer) => {
  * @param {*} duration duration in ms for message to be visible
  */
 export const displayMessage = (message, progress, confirmation, duration) => {
-    // create and dispatch the event
+    log.debug('displayMessage')
+        // create and dispatch the event
     let detail = {}
     if (message) {
         detail.message = message
@@ -315,6 +319,7 @@ export const displayMessage = (message, progress, confirmation, duration) => {
  * @param {*} error 
  */
 export const displayErrorMessage = (error) => {
+    log.debug('displayErrorMessage')
     if (error) {
         const event = new CustomEvent('displayMessage', {
             detail: {
@@ -330,6 +335,7 @@ export const displayErrorMessage = (error) => {
  * @param {*} message 
  */
 export const updateStatus = (message) => {
+    log.debug('updateStatus')
     if (message) {
         const event = new CustomEvent('displayStatus', {
             detail: {
@@ -347,6 +353,7 @@ export const updateStatus = (message) => {
  * @returns file name with new extension
  */
 export const changeFileExtension = (file, extension) => {
+    log.debug('changeFileExtension')
     const pos = file.lastIndexOf('.')
     file = file.substr(0, pos < 0 ? file.length : pos) + extension
     return file
@@ -358,6 +365,7 @@ export const changeFileExtension = (file, extension) => {
  * @returns cover image file name
  */
 export const createCoverFileName = (fileName) => {
+    log.debug('createCoverFileName')
     return `cover-${changeFileExtension(fileName, constants.JPEG_EXTENSION)}`
 }
 
@@ -367,5 +375,24 @@ export const createCoverFileName = (fileName) => {
  * @returns thumbnail image file name
  */
 export const createThumbnailFileName = (fileName) => {
+    log.debug('createThumbnailFileName')
     return `thumbnail-${changeFileExtension(fileName, constants.JPEG_EXTENSION)}`
+}
+
+/**
+ * Convert a CIDv1 to CIDv0
+ * @param {*} cid1 
+ * @returns 
+ */
+export const convertToCidV0 = (cid1) => {
+    log.debug('convertToCidV0')
+    try {
+        let cid = new CID(cid1)
+        cid = cid.toV0()
+        log.debug(cid.toString())
+        return cid.toString()
+    } catch (error) {
+        log.error(error)
+        return null
+    }
 }

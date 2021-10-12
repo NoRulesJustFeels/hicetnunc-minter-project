@@ -24,7 +24,7 @@ This project is an experimental NFT minter based on the [Hic Et Nunc](https://ww
 * Optimize for different client device capabilities.
 
 
-> **_NOTE:_**  NFT.Storage is currently not supported for storing files on IPFS due to two issues ([1](https://github.com/ipfs-shipyard/nft.storage/issues/523), [2](https://github.com/ipfs-shipyard/nft.storage/issues/571))
+> **_NOTE:_**  NFT.Storage is currently not supported for storing files on IPFS due to a [known issue](https://github.com/ipfs-shipyard/nft.storage/issues/571).
 
 
 ## Setup Instructions

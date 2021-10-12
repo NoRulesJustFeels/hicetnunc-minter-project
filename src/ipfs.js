@@ -89,7 +89,9 @@ const addFileToIpfs = async({ mimeType, buffer, reader, size, fileName }) => {
             log.debug('cid=', cid)
             const status = await nftStorage.status(cid)
             log.debug('status=', status)
-            return cid
+
+            // NFT.Storage only returns CIDv1, so convert to CIDv0 to be compatible with the HEN smart contract which only accepts CIDv0 for metadata URIs
+            return utils.convertToCidV0(cid)
         } catch (error) {
             log.error(error)
             return null
@@ -309,58 +311,25 @@ const addDirectoryToIpfs = async(file, files) => {
         }
     } else if (ipfsApi === constants.IPFS_NFT_STORAGE) {
         try {
-            // TODO waiting for bug fix from Nft.Storage: https://github.com/ipfs-shipyard/nft.storage/issues/523
-
-            // https://github.com/ipfs-shipyard/nft.storage/blob/main/packages/client/examples/browser/storeDirectory.html
-            // https://nft.storage/api-docs/
-            /*
+            // https://ipfs-shipyard.github.io/nft.storage/client/
             const formData = new FormData()
-            const fileName = file.name
-            files.forEach((file) => {
-                const newFile = new File([file.blob], encodeURIComponent(file.path)) //, { type: file.blob.type, lastModified: new Date().getTime() })
-                formData.append('file', newFile)
-                    //formData.append('file', file.blob, encodeURIComponent(file.path)) //`${utils.changeFileExtension(fileName, '')}/${encodeURIComponent(file.path)}`) //, { filename: encodeURIComponent(file.path), filepath: encodeURIComponent(file.path), contentType: file.blob.type })
-            })
-*/
-            const dT = new DataTransfer()
-            files.forEach((file) => {
-                const newFile = new File([file.blob], encodeURIComponent(file.path)) //, { type: file.blob.type, lastModified: new Date().getTime() })
-                dT.items.add(newFile)
-            })
-            const multipleInputElement = document.getElementById('multipleInput')
-            multipleInputElement.files = dT.files
-            log.debug('files=', multipleInputElement.files.length)
+            for (const file of files) {
+                formData.append('file', file.blob, encodeURIComponent(file.path))
+            }
 
-            // https://nft.storage/
-            const nftStorage = new NFTStorage({ token: utils.getSetting(constants.NFT_STORAGE_KEY) })
-
-            let cid = await nftStorage.storeDirectory(multipleInputElement.files)
-            log.debug('cid=', cid)
-            const status = await nftStorage.status(cid)
-            log.debug('status=', status)
-            return cid
-
-            /*
-
-            const options = {
+            const response = await fetch(constants.NFT_STORAGE_URL, {
                 method: 'POST',
-                body: multipleInputElement.files,
-                headers: NFTStorage.auth(utils.getSetting(constants.NFT_STORAGE_KEY))
-            }
+                headers: NFTStorage.auth(utils.getSetting(constants.NFT_STORAGE_KEY)),
+                body: formData,
+            })
+            const result = await response.json()
 
-            let result = await fetch(constants.NFT_STORAGE_URL, options)
-            let json = await result.json()
-            log.debug(json)
-
-            if (json.ok) {
-                const nftStorage = new NFTStorage({ token: utils.getSetting(constants.NFT_STORAGE_KEY) })
-                const status = await nftStorage.status(json.value.cid)
-                log.debug('status=', status)
-                return json.value.cid
+            if (result.ok) {
+                return result.value.cid
             } else {
-                throw new Error(json.error.message)
+                log.error(result.error.message)
+                return null
             }
-            */
         } catch (error) {
             log.error(error)
             return null
@@ -371,7 +340,7 @@ const addDirectoryToIpfs = async(file, files) => {
             const formData = new FormData()
             const fileName = file.name
             files.forEach((file) => {
-                formData.append('file', file.blob, `${utils.changeFileExtension(fileName, '')}/${encodeURIComponent(file.path)}`) //{ filename: encodeURIComponent(file.path), filepath: path, contentType: file.blob.type })
+                formData.append('file', file.blob, `${utils.changeFileExtension(fileName, '')}/${encodeURIComponent(file.path)}`)
             })
 
             const pinataMetadata = JSON.stringify({

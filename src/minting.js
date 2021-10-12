@@ -417,10 +417,12 @@ const readyToMint = async() => {
         return false
     }
     // TODO Display warning until Nft.Storage bug is fixed: https://github.com/ipfs-shipyard/nft.storage/issues/523
+    /*
     if (storage.getItem(constants.IPFS_API) === constants.IPFS_NFT_STORAGE && [constants.MIMETYPE.ZIP, constants.MIMETYPE.ZIP1, constants.MIMETYPE.ZIP2].includes(file.type)) {
         utils.displayMessage('NFT.Storage does not support interactive OBJKTs', false, true)
         return false
     }
+    */
     return await settings.verify()
 }
 
@@ -489,7 +491,7 @@ const mint = async() => {
                 return
             }
         }
-
+        return
         utils.displayMessage('Minting OBJKT...', true)
         try {
             log.debug('address=', address)
