@@ -491,7 +491,7 @@ const mint = async() => {
                 return
             }
         }
-        return
+
         utils.displayMessage('Minting OBJKT...', true)
         try {
             log.debug('address=', address)

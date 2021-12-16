@@ -39,6 +39,7 @@ import * as metadata from './metadata.js'
 
 // https://nft.storage/
 import { NFTStorage } from 'nft.storage'
+import { packToBlob } from 'ipfs-car/pack/blob'
 
 // https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client
 import { create } from 'ipfs-http-client'
@@ -83,15 +84,26 @@ const addFileToIpfs = async({ mimeType, buffer, reader, size, fileName }) => {
     } else if (ipfsApi === constants.IPFS_NFT_STORAGE) {
         try {
             // https://nft.storage/
+            // https://github.com/nftstorage/nft.storage/pull/991/files
             const nftStorage = new NFTStorage({ token: utils.getSetting(constants.NFT_STORAGE_KEY) })
 
-            let cid = await nftStorage.storeBlob(new Blob([buffer], { type: mimeType }))
-            log.debug('cid=', cid)
-            const status = await nftStorage.status(cid)
+            // create a CAR with a DAG that does not have raw leaf nodes
+            const { root, car } = await packToBlob({
+                input: new Blob([buffer]),
+                rawLeaves: false,
+                wrapWithDirectory: false,
+            })
+            await nftStorage.storeCar(car)
+
+            // downgrade the CID to v0
+            const cidV0 = root.toV0()
+            log.debug('cid=', cidV0.toString())
+
+            // the v0 CID can even be used in the /check API
+            const status = await nftStorage.check(cidV0)
             log.debug('status=', status)
 
-            // NFT.Storage only returns CIDv1, so convert to CIDv0 to be compatible with the HEN smart contract which only accepts CIDv0 for metadata URIs
-            return utils.convertToCidV0(cid)
+            return cidV0.toString()
         } catch (error) {
             log.error(error)
             return null
